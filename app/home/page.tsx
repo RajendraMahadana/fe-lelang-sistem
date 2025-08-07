@@ -18,7 +18,7 @@ export default function Home() {
       </div>
       <div className="w-full flex justify-center">
         <ul className="font-montserrat text-xs flex gap-10">
-          <li className="bg-gray-700 shadow-md rounded-xl px-8 py-3 text-white">🕒 Lelang Real-Time</li>
+          <li className="bg-gray-700 shadow-md rounded-xl px-8 py-3 text-white">🕒 Lelang Real Time</li>
           <li className="bg-gray-700 shadow-md rounded-xl px-8 py-3 text-white">🔐 Transaksi Aman </li>
           <li className="bg-gray-700 shadow-md rounded-xl px-8 py-3 text-white">📈 Penawaran Terbaik</li>
           <li className="bg-gray-700 shadow-md rounded-xl px-8 py-3 text-white">⏱️ Real-Time Bidding, Tanpa Ribet</li>
