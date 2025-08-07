@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebCraft Innovations | Digital Metamorphosis</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary-color: #6a5acd;
+            --secondary-color: #ff6b6b;
+            --bg-dark: #0a192f;
+            --text-light: #e6f1ff;
+        } 
+
+        * {
+            scroll-behavior: smooth;
+        }  
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            /* z-index: 2; */
+        }
+
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, rgba(106, 90, 205, 0.1), rgba(255, 107, 107, 0.1));
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-scrolled {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
+            margin: 10px;
+        }
+
+        .custom-cursor {
+            position: absolute;
+            width: 1400px;
+            height: 1400px;
+            box-shadow: 0 0 50px var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 50%;
+            background-color: transparent;
+            transform: translate(-50%, -60%);
+            z-index: 1;
+        }
+
+        .glitch-text {
+            position: relative;
+            color: var(--text-light);
+        }
+
+        .interactive-card {
+            perspective: 1000px;
+            transition: all 0.5s ease;
+        }
+
+        .interactive-card:hover {
+            transform: rotateY(10deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .digital-meta-section {
+            background: linear-gradient(135deg, rgba(106, 90, 205, 0.1), rgba(255, 107, 107, 0.1));
+            /* backdrop-filter: blur(10px); */
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(53px, 9999px, 3px, 0); }
+            5% { clip: rect(30px, 9999px, 10px, 0); }
+            10% { clip: rect(12px, 9999px, 42px, 0); }
+            15% { clip: rect(38px, 9999px, 45px, 0); }
+            20% { clip: rect(24px, 9999px, 19px, 0); }
+            25% { clip: rect(50px, 9999px, 33px, 0); }
+        }
+
+        @keyframes glitch-anim2 {
+            0% { clip: rect(23px, 9999px, 54px, 0); }
+            5% { clip: rect(40px, 9999px, 12px, 0); }
+            10% { clip: rect(18px, 9999px, 29px, 0); }
+            15% { clip: rect(35px, 9999px, 5px, 0); }
+            20% { clip: rect(43px, 9999px, 14px, 0); }
+            25% { clip: rect(12px, 9999px, 44px, 0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .floating-element {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="">
+    <div class="custom-cursor" id="custom-cursor"></div>
+    <canvas id="background-canvas"></canvas>
+
+    <nav class="navbar fixed top-0 w-full z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="text-2xl font-bold text-white mr-8">
+                    <span class="glitch-text" data-text="Designify">Designify</span>
+                </div>
+                <div class="space-x-6">
+                    <a href="#services" class="nav-link text-gray-300 hover:text-purple-400 transition duration-300">Services</a>
+                    <a href="#portfolio" class="nav-link text-gray-300 hover:text-purple-400 transition duration-300">Portfolio</a>
+                    <a href="#pricing" class="nav-link text-gray-300 hover:text-purple-400 transition duration-300">Pricing</a>
+                </div>
+            </div>
+            <div>
+                <a href="#contact" class="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition duration-300 transform hover:scale-105">
+                    Start Project
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="  min-h-screen flex items-center justify-center text-center relative">
+        <div class=" header container mx-auto px-4 relative z-10">
+            <h1 class="text-6xl  mb-6" data-text="Digital Metamorphosis">
+                Digital Metamorphosis
+            </h1>
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                Kami menyediakan jasa pembuatan website profesional yang dirancang untuk memenuhi kebutuhan bisnis Anda. Dengan desain modern, fungsionalitas unggul, dan kustomisasi sesuai preferensi, kami siap membantu Anda menciptakan website
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="#services" class="bg-purple-600 text-white px-8 py-3 rounded-full hover:bg-purple-700 transition transform hover:-translate-y-1">
+                    Explore Services
+                </a>
+                <a href="#contact" class="border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-black transition transform hover:-translate-y-1">
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section id="services" class="py-24 digital-meta-section">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-16 text-white">
+                Solusi Digital Inovatif Kami
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="interactive-card bg-black/20 p-8 rounded-lg text-center floating-element">
+                    <i data-feather="code" class="mx-auto mb-6 text-purple-500" width="64" height="64"></i>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Desain Responsif</h3>
+                    <p class="text-gray-300">Website Anda akan terlihat sempurna di semua perangkat, baik itu desktop, tablet, atau ponsel.</p>
+                </div>
+                <div class="interactive-card bg-black/20 p-8 rounded-lg text-center floating-element">
+                    <i data-feather="layers" class="mx-auto mb-6 text-green-500" width="64" height="64"></i>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Fitur Lengkap</h3>
+                    <p class="text-gray-300">Mulai dari toko online, blog, sistem manajemen konten, company profile, dan bisa disesuai kebutuhan Anda.</p>
+                </div>
+                <div class="interactive-card bg-black/20 p-8 rounded-lg text-center floating-element">
+                    <i data-feather="trending-up" class="mx-auto mb-6 text-blue-500" width="64" height="64"></i>
+                    <h3 class="text-2xl font-bold mb-4 text-white">SEO Friendly</h3>
+                    <p class="text-gray-300">Optimasi SEO untuk membantu website Anda muncul di halaman pertama pencarian.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-24 flex flex-col">
+        <h2 class="text-4xl font-bold text-center mb-16 text-white">
+            Paket Harga Fleksibel
+        </h2>
+        <div class="container px-4">
+            <div class="flex flex-warp justify-between">
+                <!-- Plan 1 -->
+                <div style="width: 400px; margin: 2px;" class="interactive-card flex-none w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4 border-2 border-purple-500 bg-gray-800 p-8 rounded-3xl text-center shadow-lg hover:shadow-purple-500/50 transition-shadow duration-300">
+                    <div class="text-purple-500 mb-4">
+                        <i class="fas fa-leaf text-6xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Basic Plan</h3>
+                    <p class="text-gray-300 mb-6">
+                        Cocok untuk perorangan dan usaha rintisan kecil yang ingin membangun kehadiran daring dasar.
+                    </p>
+                    <p class="text-3xl font-bold text-white mb-4">300.000/bulan</p>
+                    <ul class="text-gray-300 text-left mb-6 space-y-2">
+                        <li><i class="fas fa-check text-green-500"></i> 1 Website</li>
+                        <li><i class="fas fa-check text-green-500"></i> 10 GB Storage</li>
+                        <li><i class="fas fa-check text-green-500"></i> Basic Support</li>
+                    </ul>
+                    <a href="#" class="cta-button border border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white px-4 py-2 rounded-lg transition-all duration-300">Get Started</a>
+                </div>
+                <!-- Plan 2 -->
+                <div style="width: 400px;" class="interactive-card flex-none w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4 border-2 border-green-500 bg-gray-800 p-8 rounded-3xl text-center shadow-lg hover:shadow-green-500/50 transition-shadow duration-300">
+                    <div class="text-green-500 mb-4">
+                        <i class="fas fa-rocket text-6xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Pro Plan</h3>
+                    <p class="text-gray-300 mb-6">
+                        Sempurna untuk bisnis yang sedang berkembang yang mencari peningkatan kinerja dan skalabilitas digital.
+                    </p>
+                    <p class="text-3xl font-bold text-white mb-4">Rp. 600.000/bulan</p>
+                    <ul class="text-gray-300 text-left mb-6 space-y-2">
+                        <li><i class="fas fa-check text-green-500"></i> 5 Websites</li>
+                        <li><i class="fas fa-check text-green-500"></i> 50 GB Storage</li>
+                        <li><i class="fas fa-check text-green-500"></i> Priority Support</li>
+                    </ul>
+                    <a href="#" class="cta-button border border-green-500 text-green-500 hover:bg-green-500 hover:text-white px-4 py-2 rounded-lg transition-all duration-300">Get Started</a>
+                </div>
+                <!-- Plan 3 -->
+                <div style="width: 400px;" class="interactive-card flex-none w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4 border-2 border-blue-500 bg-gray-800 p-8 rounded-3xl text-center shadow-lg hover:shadow-blue-500/50 transition-shadow duration-300">
+                    <div class="text-blue-500 mb-4">
+                        <i class="fas fa-gem text-6xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Enterprise Plan</h3>
+                    <p class="text-gray-300 mb-6">
+                        Dirancang khusus untuk perusahaan yang membutuhkan solusi tangguh dan dukungan premium.
+                    </p>
+                    <p class="text-3xl font-bold text-white mb-4">Rp. 1.000.000/bulan</p>
+                    <ul class="text-gray-300 text-left mb-6 space-y-2">
+                        <li><i class="fas fa-check text-green-500"></i> Unlimited Websites</li>
+                        <li><i class="fas fa-check text-green-500"></i> 1 TB Storage</li>
+                        <li><i class="fas fa-check text-green-500"></i> 24/7 Dedicated Support</li>
+                    </ul>
+                    <a href="#" class="cta-button border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white px-4 py-2 rounded-lg transition-all duration-300">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    
+    <script>
+
+// window.addEventListener('scroll', function() {
+//             const navbar = document.querySelector('.navbar');
+//             if (window.scrollY > 50) {
+//                 navbar.classList.add('navbar-scrolled');
+//             } else {
+//                 navbar.classList.remove('navbar-scrolled');
+//             }
+//         });
+
+        // Initialize Feather Icons
+        feather.replace();
+
+        // Three.js Background
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('background-canvas'), alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // Create particles
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+
+        for (let i = 0; i < 2000; i++) {
+            vertices.push(
+                Math.random() * 2000 - 1000,
+                Math.random() * 1000 - 500,
+                Math.random() * 2000 - 1000
+            );
+        }
+
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+        const material = new THREE.PointsMaterial({ 
+            color: 0x6a5acd, 
+            size: 2.5, 
+            transparent: true,
+            opacity: 0.5
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        camera.position.z = 999;
+
+        function animateParticles() {
+            requestAnimationFrame(animateParticles);
+            particles.rotation.x += 0.0005;
+            particles.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+        animateParticles();
+
+           
+    </script>
+</body>
+</html>
