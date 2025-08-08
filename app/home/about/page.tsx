@@ -2,8 +2,6 @@ export default function About() {
     return(
         <>
         <section className="w-[100vm] min-h-[100vh] flex flex-col justify-center p-5 px-50">
-            <div className=" w-120 h-120 bg-transparent rounded-full absolute left-20 top-30 backdrop-blur-2xl z-[-1]"></div>
-            <div className=" w-25 h-25 bg-teal-600   rounded-full absolute left-40 top-50  z-[-2] animate-pulse"></div> 
         <div className="mb-14 mt-16">
             <h1 className="font-montserrat font-medium text-5xl">Tentang Kami</h1>
         </div>
