@@ -31,10 +31,11 @@ export default function Home() {
 
     </section>
 
+    <section className=" flex flex-col justify-center">
 
       <section className="w-[100vm] flex justify-center">
-        <div className="shadow-md w-2/3 overflow-hidden relative p-18 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-950   rounded-4xl">
-        <div className="absolute w-120 h-120 border rounded-full right-[-100] bottom-[100] border-blue-800 shadow-blue-900 shadow-2xl"></div>
+        <div className="shadow-md z-10 w-2/3 overflow-hidden relative p-18 bg-gradient-to-r from-gray-800 via-gray-900 to-gray-950   rounded-3xl">
+        <div className="absolute animate-pulse w-120 h-120 border rounded-full right-[-100] bottom-[100] border-blue-800 shadow-blue-900 shadow-2xl"></div>
           <i className="ri-search-eye-line text-5xl text-blue-600"></i>
           <div className="flex flex-row-reverse gap-10 mt-8">
             <h1 className="w-3/4 font-montserrat z-10 text-end font-medium text-4xl mb-10 text-zinc-100">Temukan Barang Impian mu</h1>
@@ -47,9 +48,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section>
+      <footer className="-mt-50 flex items-end py-10 bg-gray-900 rounded-t-3xl min-h-[60vh]">
         <Footer></Footer>
-      </section>
+      </footer>
+
+    </section>
+
     </>
   );
 }
