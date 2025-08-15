@@ -7,7 +7,7 @@ export default function Footer() {
                     <div className="w-1/2">
                         <div className="mb-10">
                             <h1 className="mb-4 text-white">Lelangin</h1>
-                            <p className=" text-xs">Platform lelang modern yang menawarkan pengalaman cepat, terpercaya, dan menyenangkan, dengan komitmen pada kesempatan yang adil bagi semua.</p>
+                            <p className=" text-xs w-1/2">Platform lelang modern yang menawarkan pengalaman cepat, terpercaya, dan menyenangkan, dengan komitmen pada kesempatan yang adil bagi semua.</p>
                         </div>
 
                         <div className="flex gap-10">

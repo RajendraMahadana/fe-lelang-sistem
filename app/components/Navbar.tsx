@@ -44,8 +44,12 @@ export default function Navbar() {
 
             <div className="p-5 fixed right-0">
                 <div className="flex gap-2">
+                    <Link href="/auth/login">
                     <button className="font-montserrat bg-gray-800 shadow text-white px-8 rounded-lg py-2 hover:bg-sky-900 hover:text-white transition-all duration-300 ease-initial cursor-pointer">Login</button>
-                    <button className="font-montserrat px-5 py-2 transition-all duration-150 ease-initial cursor-pointer">Register</button>
+                    </Link>
+                    <Link href="/auth/register">
+                      <button className="font-montserrat px-5 py-2 transition-all duration-150 ease-initial cursor-pointer">Register</button>
+                    </Link>
                 </div> 
             </div>
         </nav>

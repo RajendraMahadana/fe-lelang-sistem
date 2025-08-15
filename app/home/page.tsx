@@ -48,7 +48,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="-mt-50 flex items-end py-10 bg-gray-900 rounded-t-3xl min-h-[60vh]">
+      <footer className="-mt-50 flex items-end py-25 bg-gray-900 rounded-t-3xl min-h-[70vh]">
         <Footer></Footer>
       </footer>
 

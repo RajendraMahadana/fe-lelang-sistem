@@ -1,3 +1,5 @@
+import Footer from "@/app/components/Footer";
+
 export default function About() {
     return(
         <>
@@ -57,6 +59,10 @@ export default function About() {
         </div>
 
         </div>
+        </section>
+
+        <section className=" flex items-center py-10 bg-gray-900 rounded-t-3xl min-h-[50vh]">
+            <Footer></Footer>
         </section>
         </>
     )

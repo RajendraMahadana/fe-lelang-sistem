@@ -3,7 +3,9 @@ import Navbar from "../components/Navbar";
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}
+
+: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
@@ -15,7 +17,7 @@ export default function RootLayout({
 />
       </head>
       <body>
-        <section className={` min-h-[100vh] flex justify-center items-center`}>
+        <section>
         <Navbar></Navbar>
         <main>
           {children}
