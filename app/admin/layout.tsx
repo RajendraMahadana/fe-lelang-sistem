@@ -12,17 +12,19 @@ export default function RootLayout({
   return (
     <>
     <main className="flex ">
-      <aside>
+      <aside className="h-screen sticky top-0 z-50">
         <Sidebar></Sidebar>
       </aside>
 
-      <nav>
+      <div className="flex-1">
+      <nav className="ml-5">
         <NavbarAdmin></NavbarAdmin>
       </nav>
 
-      <section className="p-10">
+      <section className="pt-20 p-5">
         {children}
       </section>
+      </div>
     </main>
     </>
   )

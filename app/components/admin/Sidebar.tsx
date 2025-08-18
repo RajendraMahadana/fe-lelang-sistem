@@ -9,11 +9,11 @@ import {
   Settings, 
   FileText, 
   BarChart3, 
-  Mail, 
   ChevronLeft, 
   ChevronRight,
   Menu,
-  X
+  X,
+  Package
 } from 'lucide-react'
 
 interface NavItem {
@@ -26,9 +26,9 @@ interface NavItem {
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: Home },
   { name: 'Users', href: '/admin/users', icon: Users, badge: '12' },
-  { name: 'Reports', href: '/reports', icon: FileText },
+  { name: 'Asset', href: '/admin/asset', icon: Package, badge: '3' },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Messages', href: '/messages', icon: Mail, badge: '3' },
+  { name: 'Reports', href: '/reports', icon: FileText },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
@@ -41,8 +41,8 @@ export default function Sidebar() {
   const toggleMobile = () => setIsMobileOpen(!isMobileOpen)
 
   return (
-    <>
-    <div className='flex'>
+      <>
+      
       {/* Mobile menu button */}
       <button
         onClick={toggleMobile}
@@ -62,27 +62,33 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div
         className={`
-          fixed top-0 left-0 z-40 h-[100vh] bg-white border-r border-gray-200 transition-all duration-300 ease-in-out shadow-lg 
+          fixed top-0 left-0 z-40 h-full bg-white border-r border-gray-200 transition-all duration-300 ease-in-out shadow-lg 
           ${isCollapsed ? 'w-20' : 'w-72'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           lg:relative lg:translate-x-0
         `}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200  h-20 flex-shrink-0">
-          <div className={`flex items-center transition-all duration-300 ${isCollapsed ? '' : 'space-x-3'}`}>
-            <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">A</span>
-            </div>
-            <div className={`transition-all duration-300 overflow-hidden ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-              <div className="whitespace-nowrap">
-                <h1 className="text-xl font-bold text-gray-900">AppName</h1>
-                <p className="text-xs text-gray-500">Admin Panel</p>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 overflow-hidden  h-20 flex-shrink-0">
+          {!isCollapsed && (
+            <div className={`flex items-center transition-all duration-300 ${isCollapsed ? '' : 'space-x-3'}`}>
+              <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">A</span>
+              </div>
+              <div className={`transition-all duration-300 overflow-hidden ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+                <div className="whitespace-nowrap">
+                  <h1 className="text-xl font-bold text-gray-900">AppName</h1>
+                  <p className="text-xs text-gray-500">Admin Panel</p>
+                </div>
               </div>
             </div>
-          </div>
-          
-          
+          )}
+          <button
+            onClick={toggleCollapse}
+            className="hidden lg:flex text-white font-medium items-center justify-center w-8 h-8 bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors flex-shrink-0"
+          >
+            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
         </div>
 
         {/* User info */}
@@ -157,16 +163,8 @@ export default function Sidebar() {
       {/* Main content spacer - only on desktop */}
       {/* <div className={`hidden lg:block transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-72'}`} /> */}
 
-          <div className=' h-8 p-10 flex items-center'>
-           
-          <button
-            onClick={toggleCollapse}
-            className="hidden lg:flex text-white font-medium items-center justify-center w-10 h-10 bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors flex-shrink-0"
-          >
-            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </button>
-          </div>
-      </div>
+          
+     
     </>
   )
 }

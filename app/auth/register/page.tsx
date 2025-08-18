@@ -1,19 +1,22 @@
-"use client"
+"use client";
 
+import { apiFetch } from "@/app/lib/Api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
+
+type RegisterFormData = {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    avatar: File | null;
+};
 
 export default function Register() {
-      const router = useRouter();
+    const router = useRouter();
 
-    type RegisterFormData = {
-        name: string;
-        email: string;
-        password: string;
-        password_confirmation: string;
-        avatar: File | null;
-    };
 
 
     const [formData, setFormData] = useState<RegisterFormData>({
@@ -25,6 +28,14 @@ export default function Register() {
     });
 
     const [message, setMeassage] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+    
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "avatar" && e.target.files) {
@@ -36,6 +47,7 @@ export default function Register() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setLoading(true);
 
         const form = new FormData();
             form.append("name", formData.name);
@@ -48,23 +60,17 @@ export default function Register() {
         }
 
         try {
-            const res = await fetch("http://127.0.0.1:8000/api/register", {
-                method: "POST",
-                body: form,
-            });
+        await apiFetch("/register", {
+            method: "POST",
+            body: form,
+        });
 
-            const data = await res.json();
-            if (res.ok) {
-                setMeassage("Registrasi Berhasil");
-            } else {
-                setMeassage(data.error || "Registrasi Galal.");
-            }
-
-            router.push("/auth/login")
-
-        } catch (error) {
-            setMeassage("Terjadi Kesalahan")
-        }
+        setMeassage("Registrasi Berhasil");
+        router.push("/auth/login");
+    } catch {
+        setLoading(false);
+        setMeassage("Registrasi Gagal");
+    }
     }
 
      return (
@@ -169,7 +175,7 @@ export default function Register() {
                         </label>
 
                         <div className="mt-6">
-                            <button className="w-full bg-gray-800 text-white rounded-md shadow font-montserrat  px-5 py-2 transition-all duration-150 ease-initial cursor-pointer" type="submit">Register</button>
+                            <button className="w-full bg-gray-800 text-white rounded-md shadow font-montserrat flex items-center justify-center  px-5 py-2 transition-all duration-150 ease-initial group cursor-pointer" type="submit">{loading ?   <ClipLoader color="#36d7b7" size={24} /> : "Register"}</button>
                         </div>
                     </form>
 

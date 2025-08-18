@@ -1,8 +1,10 @@
 "use client";
 
+import { apiFetch } from "@/app/lib/Api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
 
 interface LoginResponse {
   token: string;
@@ -21,12 +23,16 @@ type LoginFormData = {
 
 export default function Login() {
   const router = useRouter();
-
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState<LoginFormData>({ email: "", password: "" });
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+   useEffect(() => {
+      
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,9 +40,9 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/login", {
+      const data = await apiFetch<LoginResponse>("/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,13 +51,7 @@ export default function Login() {
         body: JSON.stringify(formData),
       });
 
-      const data: LoginResponse = await res.json();
       console.log("Response:", data);
-
-      if (!res.ok) {
-        setMessage(data?.user ? data.user.name : "Login gagal.");
-        return;
-      }
 
       setMessage("Login berhasil!");
       localStorage.setItem("auth_token", data.token);
@@ -66,6 +66,7 @@ export default function Login() {
     } catch (err) {
       console.error("Fetch error:", err);
       setMessage("Terjadi kesalahan.");
+      setLoading(false);
     }
   };
     return(
@@ -122,7 +123,7 @@ export default function Login() {
                         </div>
 
                         <div className="mt-6">
-                            <button className="w-full bg-gray-800 text-white rounded-md shadow font-montserrat  px-5 py-2 transition-all duration-150 ease-initial cursor-pointer" type="submit">Register</button>
+                            <button className="w-full bg-gray-800 text-white rounded-md flex justify-center items-center shadow font-montserrat  px-5 py-2 transition-all duration-150 ease-initial cursor-pointer" type="submit">{loading ?   <ClipLoader color="#36d7b7" size={24} /> : "Login"}</button>
                         </div>
                     </form>
 
