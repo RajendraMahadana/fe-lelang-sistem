@@ -72,7 +72,7 @@ export default function DataTable()  {
           <button className="bg-indigo-800 px-4 py-2 text-white rounded-md text-sm cursor-pointer">Add</button>
         </Link>
       </div>
-      <div className="mt-3">
+      <div className="mt-3 bg-gray-100 ">
         <table className="overflow-hidden w-full rounded-lg shadow">
           <thead className="bg-gray-800 text-zinc-200">
             <tr className="text-sm font-light">
@@ -89,7 +89,7 @@ export default function DataTable()  {
           <tbody>
             {data.length > 0 ? (
               data.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 text-xs">
+                <tr key={item.id} className="hover:bg-gray-50 border-t border-gray-300 text-xs">
                   <td className="py-2 px-4 text-start">{item.id}</td>
                   <td className="py-2 px-4 text-start">
                     <Image
@@ -105,27 +105,40 @@ export default function DataTable()  {
                   <td className="py-2 px-4 text-start">{new Date(item.waktu_mulai).toLocaleString()}</td>
                   <td className="py-2 px-4 text-start">{new Date(item.waktu_selesai).toLocaleString()}</td>
                   <td className="py-2 px-4 text-start">
+                  <div className="flex items-center font-montserrat space-x-2">
+                    {/* Titik warna */}
                     <span
-                      className={`px-2 py-1 rounded text-white text-xs ${
+                      className={`w-3 h-3 rounded-full font-light ${
                         item.status === 'aktif'
-                          ? 'bg-green-500'
+                          ? 'bg-green-500/70 outline outline-green-400 shadow shadow-green-500'
                           : item.status === 'selesai'
-                          ? 'bg-gray-500'
+                          ? 'bg-gray-500/70 outline outline-gray-400 shadow shadow-gray-500'
                           : 'bg-red-500'
+                      }`}
+                    ></span>
+                    {/* Teks status dengan warna sama */}
+                    <span
+                      className={`text-xs font-medium ${
+                        item.status === 'aktif'
+                          ? 'text-green-500'
+                          : item.status === 'selesai'
+                          ? 'text-gray-500'
+                          : 'text-red-500'
                       }`}
                     >
                       {item.status}
                     </span>
-                  </td>
+                  </div>
+                </td>
                   <td className="py-2 px-4 text-start space-x-2">
                     <button
-                      className="p-2 bg-blue-500 cursor-pointer text-white rounded"
+                      className="p-2 bg-blue-500 cursor-pointer shadow hover:bg-blue-700 text-white rounded"
                       onClick={() => setSelectedBarang(item)}
                     >
                       <Pencil size={16} />
                     </button>
                     <button
-                      className="bg-red-600 cursor-pointer hover:bg-red-700 text-white p-2 rounded-md text-xs"
+                      className="bg-red-600 cursor-pointer hover:bg-red-700 text-white p-2 rounded-md shadow text-xs"
                       onClick={async () => {
                         if (confirm("Yakin ingin menghapus data ini?")) {
                           try {

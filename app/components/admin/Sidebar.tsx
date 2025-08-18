@@ -62,7 +62,7 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div
         className={`
-          fixed top-0 left-0 z-40 h-full bg-white border-r border-gray-200 transition-all duration-300 ease-in-out shadow-lg 
+          fixed top-0 left-0 z-40 h-full bg-white border-r border-gray-200 transition-all duration-300 ease-in-out  
           ${isCollapsed ? 'w-20' : 'w-72'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           lg:relative lg:translate-x-0

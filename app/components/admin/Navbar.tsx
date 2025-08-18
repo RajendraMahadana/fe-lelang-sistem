@@ -18,10 +18,10 @@ export default function NavbarAdmin() {
 
     return(
         <>
-        <section className="fixed flex w-[100%]  items-center h-20">
+        <section className="fixed  flex w-[100%] border-gray-200 border-b bg-white items-center h-20">
             <div className="flex items-center">
                 
-                <div className="w-50">
+                <div className="w-50 flex ml-5">
                     <h1 className="font-montserrat font-medium">{title}</h1>
                 </div>
 
