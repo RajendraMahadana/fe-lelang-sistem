@@ -17,7 +17,7 @@ export default function RootLayout({
       </aside>
 
       <div className="flex-1">
-      <nav className="ml fixed z-10 ">
+      <nav className="ml fixed z-1">
         <NavbarAdmin></NavbarAdmin>
       </nav>
 

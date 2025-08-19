@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function CreateLelangBarang() {
   const [namaBarang, setNamaBarang] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [categories, setCategories] = useState<any[]>([]);
   const [deskripsi, setDeskripsi] = useState("");
   const [hargaAwal, setHargaAwal] = useState<number>(0);
   const [waktuMulai, setWaktuMulai] = useState("");
@@ -11,6 +13,25 @@ export default function CreateLelangBarang() {
   const [bidTime, setBidTime] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [gambarBarang, setGambar] = useState<File | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const res = await fetch("http://127.0.0.1:8000/api/categories", {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setCategories(data.data || []); // sesuaikan dengan response API kamu
+      } catch (err) {
+        console.error("Gagal ambil kategori", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -23,6 +44,7 @@ export default function CreateLelangBarang() {
     if (gambarBarang) formData.append("gambar_barang", gambarBarang);
 
     formData.append("nama_barang", namaBarang);
+    formData.append("kategori_id", categoryId);
     formData.append("deskripsi", deskripsi);
     formData.append("harga_awal", String(hargaAwal));
     formData.append("waktu_mulai", waktuMulai);       // format: YYYY-MM-DD HH:mm:ss
@@ -32,7 +54,6 @@ export default function CreateLelangBarang() {
     const res = await fetch("http://127.0.0.1:8000/api/lelang-barang", {
       method: "POST",
       headers: {
-        // JANGAN set Content-Type manual; biarkan browser set boundary multipart
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
@@ -44,6 +65,7 @@ export default function CreateLelangBarang() {
     if (res.ok) {
       setMessage("Barang lelang berhasil dibuat!");
       setNamaBarang("");
+      setCategoryId("");
       setDeskripsi("");
       setHargaAwal(0);
       setWaktuMulai("");
@@ -81,6 +103,22 @@ export default function CreateLelangBarang() {
           className="w-full border p-2 rounded"
           required
         />
+
+        <div>
+        <label>Kategori</label>
+        <select
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+          required
+        >
+          <option value="">-- Pilih Kategori --</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.nama_kategori}
+            </option>
+          ))}
+        </select>
+      </div>
 
         <textarea
           placeholder="Deskripsi"

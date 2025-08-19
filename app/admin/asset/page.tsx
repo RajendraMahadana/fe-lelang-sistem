@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Pencil, Trash } from "lucide-react";
-import ModalUpdate from "@/app/components/admin/Modal";
+import ModalUpdate from "@/app/components/admin/Modal/Asset/ModalEditAsset";
 import { pusher } from "@/utils/pusher";
 
 interface LelangBarang {
@@ -16,6 +16,10 @@ interface LelangBarang {
   waktu_mulai: string;
   waktu_selesai: string;
   status: 'aktif' | 'selesai' | 'dibatalkan';
+  category?: {
+    id: number;
+    nama_kategori: string;
+  };
 }
 
 
@@ -79,6 +83,7 @@ export default function DataTable()  {
               <th className="py-2 px-4 text-start">ID</th>
               <th className="py-2 px-4 text-start">Gambar</th>
               <th className="py-2 px-4 text-start">Nama Barang</th>
+              <th className="py-2 px-4 text-start">Category</th>
               <th className="py-2 px-4 text-start">Harga Awal</th>
               <th className="py-2 px-4 text-start">Waktu Mulai</th>
               <th className="py-2 px-4 text-start">Waktu Selesai</th>
@@ -101,6 +106,7 @@ export default function DataTable()  {
                     />
                   </td>
                   <td className="py-2 px-4 text-start">{item.nama_barang}</td>
+                  <td className="py-2 px-4 text-start">{item.category?.nama_kategori || "-"}</td>
                   <td className="py-2 px-4 text-start">Rp {item.harga_awal.toLocaleString()}</td>
                   <td className="py-2 px-4 text-start">{new Date(item.waktu_mulai).toLocaleString()}</td>
                   <td className="py-2 px-4 text-start">{new Date(item.waktu_selesai).toLocaleString()}</td>
