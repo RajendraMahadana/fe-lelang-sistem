@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <>
     <section className="w-[100vm] min-h-[100vh] flex flex-col justify-center">
-
+    
     <div className=" w-120 h-120 bg-transparent rounded-full absolute left-50 top-20 backdrop-blur-2xl z-[-1]"></div>
     <div className=" w-25 h-25 bg-blue-600 rounded-full absolute left-70 top-40  z-[-2] animate-pulse"></div>
     <Product></Product> 

@@ -21,8 +21,10 @@ export default function RootLayout({
         <NavbarAdmin></NavbarAdmin>
       </nav>
 
-      <section className="pt-25 p-5">
+      <section className="pt-20">
+        <div className="rounded-lg p-5 ">
         {children}
+      </div>
       </section>
       </div>
     </main>

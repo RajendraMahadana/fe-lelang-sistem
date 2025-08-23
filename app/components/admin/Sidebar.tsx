@@ -40,7 +40,7 @@ const navigation: NavItem[] = [
   },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Reports', href: '/reports', icon: FileText },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
 export default function Sidebar() {

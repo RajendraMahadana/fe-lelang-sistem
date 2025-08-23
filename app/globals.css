@@ -12,11 +12,12 @@
   --font-mono: var(--font-geist-mono);
   --font-montserrat: var(--font-montserrat);
   --font-jost: var(--font-jost);
+  --font-poppins: var(--font-poppins);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #edebea;
+    --background: rgb(249, 251, 251);
     --foreground: #0a0a0a;
   }
 }

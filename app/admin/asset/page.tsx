@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Pencil, Trash } from "lucide-react";
+import { ArrowDownToLine, ChevronDown, Pencil, Plus, Trash } from "lucide-react";
 import ModalUpdate from "@/app/components/admin/Modal/Asset/ModalEditAsset";
 import { pusher } from "@/utils/pusher";
 
@@ -12,6 +12,7 @@ interface LelangBarang {
   gambar_barang: string;
   nama_barang: string;
   deskripsi: string;
+  kategori_id: number;
   harga_awal: number;
   waktu_mulai: string;
   waktu_selesai: string;
@@ -25,6 +26,7 @@ interface LelangBarang {
 
 export default function DataTable()  {
   const [data, setData] = useState<LelangBarang[]>([]);
+   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedBarang, setSelectedBarang] = useState<LelangBarang | null>(null);
 
@@ -66,85 +68,134 @@ export default function DataTable()  {
     };
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+
 
 
   return (
-    <section>
+    <section className="font-poppins">
+
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl">Data Asset Lelang</h1>
+        </div>
+
+        <div className="flex gap-2 items-center">
+
+          
+
       <div>
+        <div className="relative inline-block text-left">
+      <button
+        onClick={() => setOpen(!open)}
+        className="px-4 py-2 flex gap-1 items-center bg-none text-sm text-sky-500 outline-1 rounded-sm"
+      >
+        Menu <ChevronDown size={16}/>
+      </button>
+
+      {open && (
+        <div className="absolute mt-2 w-40 bg-white text-sm rounded-sm shadow-lg z-10">
+          <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+            Import
+          </a>
+          <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+            Export
+          </a>
+        </div>
+      )}
+    </div>
+     </div>
+
+
+     <div>
+
         <Link href={`/admin/asset/create-lelang`}>
-          <button className="bg-indigo-800 px-4 py-2 text-white rounded-md text-sm cursor-pointer">Add</button>
+          <button className="bg-sky-400 px-4 py-2 text-white flex items-center gap-1 rounded-sm text-sm cursor-pointer">
+            <Plus size={16}/> Tambah Asset</button>
         </Link>
+          </div>
       </div>
-      <div className="mt-3 bg-gray-100 ">
-        <table className="overflow-hidden w-full rounded-lg shadow">
-          <thead className="bg-gray-800 text-zinc-200">
-            <tr className="text-sm font-light">
-              <th className="py-2 px-4 text-start">ID</th>
-              <th className="py-2 px-4 text-start">Gambar</th>
-              <th className="py-2 px-4 text-start">Nama Barang</th>
-              <th className="py-2 px-4 text-start">Category</th>
-              <th className="py-2 px-4 text-start">Harga Awal</th>
-              <th className="py-2 px-4 text-start">Waktu Mulai</th>
-              <th className="py-2 px-4 text-start">Waktu Selesai</th>
-              <th className="py-2 px-4 text-start">Status</th>
-              <th className="py-2 px-4 text-start">Aksi</th>
+      </div>
+
+      
+      <div className="mt-3 bg-white p-7 shadow-sm rounded-md">
+        <table className="overflow-hidden w-full rounded-sm ">
+          <thead className="">
+            <tr className="text-sm">
+              <th className="py-2 px-4 text-start font-normal">ID</th>
+              <th className="py-2 px-4 text-start font-normal">Gambar</th>
+              <th className="py-2 px-4 text-start font-normal">Nama Barang</th>
+              <th className="py-2 px-4 text-start font-normal">Category</th>
+              <th className="py-2 px-4 text-start font-normal">Harga Awal</th>
+              <th className="py-2 px-4 text-start font-normal">Waktu Mulai</th>
+              <th className="py-2 px-4 text-start font-normal">Waktu Selesai</th>
+              <th className="py-2 px-4 text-start font-normal">Status</th>
+              <th className="py-2 px-4 text-start font-normal">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {data.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={4} className="text-center justify-center items-center py-4 self-center">
+                  Loading...
+                </td>
+              </tr>
+            ): data.length > 0 ? (
               data.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 border-t border-gray-300 text-xs">
+                <tr key={item.id} className="hover:bg-gray-50 border-t border-gray-200 text-xs">
                   <td className="py-2 px-4 text-start">{item.id}</td>
                   <td className="py-2 px-4 text-start">
                     <Image
                       src={`http://127.0.0.1:8000/${item.gambar_barang}`}
                       alt={item.nama_barang}
-                      width={200}
-                      height={200}
-                      className="w-15 h-15 object-cover aspect-square rounded-md"
+                      width={50}
+                      height={50}
+                      className=" object-cover aspect-square rounded-md"
                     />
                   </td>
                   <td className="py-2 px-4 text-start">{item.nama_barang}</td>
                   <td className="py-2 px-4 text-start">{item.category?.nama_kategori || "-"}</td>
-                  <td className="py-2 px-4 text-start">Rp {item.harga_awal.toLocaleString()}</td>
-                  <td className="py-2 px-4 text-start">{new Date(item.waktu_mulai).toLocaleString()}</td>
-                  <td className="py-2 px-4 text-start">{new Date(item.waktu_selesai).toLocaleString()}</td>
+                  <td className="py-2 px-4 text-start">Rp{new Intl.NumberFormat("id-ID").format(item.harga_awal)}</td>
+                 <td className="py-2 px-4 text-start">
+  {new Intl.DateTimeFormat("id-ID", {
+  day: "2-digit",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+}).format(new Date(item.waktu_mulai)) }
+</td>
                   <td className="py-2 px-4 text-start">
-                  <div className="flex items-center font-montserrat space-x-2">
-                    {/* Titik warna */}
-                    <span
-                      className={`w-3 h-3 rounded-full font-light ${
-                        item.status === 'aktif'
-                          ? 'bg-green-500/70 outline outline-green-400 shadow shadow-green-500'
-                          : item.status === 'selesai'
-                          ? 'bg-gray-500/70 outline outline-gray-400 shadow shadow-gray-500'
-                          : 'bg-red-500'
-                      }`}
-                    ></span>
-                    {/* Teks status dengan warna sama */}
-                    <span
-                      className={`text-xs font-medium ${
-                        item.status === 'aktif'
-                          ? 'text-green-500'
-                          : item.status === 'selesai'
-                          ? 'text-gray-500'
-                          : 'text-red-500'
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  </div>
-                </td>
+  {new Intl.DateTimeFormat("id-ID", {
+  day: "2-digit",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+}).format(new Date(item.waktu_mulai)) }
+</td>
+                 <td className="py-2 px-4 text-start">
+  <div className="flex items-center">
+    <span
+      className={`px-3 py-1 rounded-sm text-xs font-medium
+        ${
+          item.status === "aktif"
+            ? "bg-green-100 text-green-600"
+            : item.status === "selesai"
+            ? "bg-gray-100 text-gray-600"
+            : "bg-red-100 text-red-600"
+        }`}
+    >
+      {item.status}
+    </span>
+  </div>
+</td>
                   <td className="py-2 px-4 text-start space-x-2">
                     <button
-                      className="p-2 bg-blue-500 cursor-pointer shadow hover:bg-blue-700 text-white rounded"
+                      className="p-2 bg-blue-500 cursor-pointer shadow hover:bg-blue-700 text-white rounded-sm"
                       onClick={() => setSelectedBarang(item)}
                     >
                       <Pencil size={16} />
                     </button>
                     <button
-                      className="bg-red-600 cursor-pointer hover:bg-red-700 text-white p-2 rounded-md shadow text-xs"
+                      className="bg-red-600 cursor-pointer hover:bg-red-700 text-white p-2 rounded-sm shadow text-xs"
                       onClick={async () => {
                         if (confirm("Yakin ingin menghapus data ini?")) {
                           try {
@@ -178,6 +229,8 @@ export default function DataTable()  {
                 </td>
               </tr>
             )}
+           
+            
           </tbody>
         </table>
       </div>

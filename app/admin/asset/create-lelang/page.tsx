@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function CreateLelangBarang() {
@@ -83,7 +84,7 @@ export default function CreateLelangBarang() {
 
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="bg-white p-5 rounded-lg">
       <h1 className="text-xl font-bold mb-4">Tambah Barang Lelang</h1>
 
       {message && <p className="mb-2 text-sm text-red-600">{message}</p>}
@@ -92,7 +93,7 @@ export default function CreateLelangBarang() {
       <input
             type="file"
             onChange={(e) => setGambar(e.target.files?.[0] || null)}
-            className="w-full border p-2 rounded"
+            className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
             required
           />
         <input
@@ -100,7 +101,7 @@ export default function CreateLelangBarang() {
           placeholder="Nama Barang"
           value={namaBarang}
           onChange={(e) => setNamaBarang(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
           required
         />
 
@@ -124,7 +125,7 @@ export default function CreateLelangBarang() {
           placeholder="Deskripsi"
           value={deskripsi}
           onChange={(e) => setDeskripsi(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
         />
 
         <input
@@ -132,7 +133,7 @@ export default function CreateLelangBarang() {
           placeholder="Harga Awal"
           value={hargaAwal}
           onChange={(e) => setHargaAwal(Number(e.target.value))}
-          className="w-full border p-2 rounded"
+          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
           required
         />
 
@@ -140,7 +141,7 @@ export default function CreateLelangBarang() {
           type="datetime-local"
           value={waktuMulai}
           onChange={(e) => setWaktuMulai(e.target.value.replace("T", " ") + ":00")}
-          className="w-full border p-2 rounded"
+          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
           required
         />
 
@@ -148,7 +149,7 @@ export default function CreateLelangBarang() {
           type="datetime-local"
           value={waktuSelesai}
           onChange={(e) => setWaktuSelesai(e.target.value.replace("T", " ") + ":00")}
-          className="w-full border p-2 rounded"
+          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
           required
         />
 
@@ -157,15 +158,26 @@ export default function CreateLelangBarang() {
           placeholder="Bid Time (menit)"
           value={bidTime ?? ""}
           onChange={(e) => setBidTime(Number(e.target.value))}
-          className="w-full border p-2 rounded"
+          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
         />
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded"
-        >
-          Simpan
-        </button>
+        <div className="w-full flex justify-end">
+          <div className="flex w-1/3 space-x-2">
+            <Link href={`/admin/asset`} className="w-full bg-red-600 flex justify-center items-center text-white py-2 font-medium font-montserrat rounded-md shadow-md">
+              <button
+                className=""
+                >
+                Batal
+              </button>
+            </Link>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 font-medium font-montserrat rounded-md shadow-md"
+              >
+              Simpan
+            </button>
+          </div>  
+        </div>
       </form>
     </div>
   );
