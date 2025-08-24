@@ -26,9 +26,9 @@ interface LelangBarang {
 
 export default function DataTable()  {
   const [data, setData] = useState<LelangBarang[]>([]);
-   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedBarang, setSelectedBarang] = useState<LelangBarang | null>(null);
+  const [open, setOpen] = useState(false);
 
   const fetchBarang = async () => {
     try {

@@ -32,7 +32,7 @@ const handleLogout = async () => {
   return (
     <button
       onClick={handleLogout}
-      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+      className="px-4 py-2 font-poppins bg-red-600 text-white rounded-sm hover:bg-red-700 transition"
     >
       Logout
     </button>

@@ -57,7 +57,7 @@ export default function Login() {
       localStorage.setItem("auth_token", data.token);
 
       if (data.user?.role === "user") {
-        router.push("/(user)");
+        router.push("/user/home/index");
       } else if (data.user?.role === "admin") {
         router.push("/admin/dashboard");
       } else {
