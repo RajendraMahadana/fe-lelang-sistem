@@ -6,15 +6,17 @@ import { usePathname } from "next/navigation"
 export default function NavbarAdmin() {
     const pathName = usePathname();
 
-    const titles: Record<string, string> = {
-        "/user/home": "Home",
-        "/user/nipl/index": "NIPL",
-        "/admin/asset": "Asset",
-        "/admin/reports": "Reports",
-        "/admin/analytics": "Analytics",
-    }
+    const titles: { pattern: RegExp; title: string }[] = [
+  { pattern: /^\/user\/home/, title: "Home" },
+  { pattern: /^\/user\/nipl\/index/, title: "NIPL" },
+  { pattern: /^\/user\/asset/, title: "Asset" }, // id angka
+  { pattern: /^\/user\/asset\/\d+$/, title: "Detail Asset" }, // id angka
+  { pattern: /^\/admin\/reports$/, title: "Reports" },
+  { pattern: /^\/admin\/analytics$/, title: "Analytics" },
+];
 
-    const title = titles[pathName] || "Halaman";
+   const currentTitle =
+  titles.find(({ pattern }) => pattern.test(pathName))?.title || "";
 
     return(
         <>
@@ -22,7 +24,7 @@ export default function NavbarAdmin() {
             <div className="flex items-center">
                 
                 <div className="w-50 flex ml-5">
-                    <h1 className="font-montserrat font-medium">{title}</h1>
+                    <h1 className="font-montserrat font-medium">{currentTitle}</h1>
                 </div>
 
                 <div>

@@ -20,7 +20,7 @@ export default function UserInfo() {
       }
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/user", {
+        const res = await fetch("http://127.0.0.1:8000/api/user/isLogin", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
