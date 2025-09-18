@@ -17,24 +17,26 @@ export default function CategoryPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const fetchCategories = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("http://127.0.0.1:8000/api/categories", {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-        },
-      });
-      if (!res.ok) throw new Error("Gagal fetch data kategori");
-      const result = await res.json();
-      setCategories(Array.isArray(result) ? result : result.data || []);
-    } catch (err) {
-      setCategories([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchCategories = async () => {
+  setLoading(true);
+  try {
+   const res = await fetch("http://127.0.0.1:8000/api/categories", {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      },
+    });
+
+    if (!res.ok) throw new Error("Gagal fetch data kategori");
+
+    const result = await res.json();
+    setCategories(Array.isArray(result) ? result : result.data || []);
+  } catch (err) {
+    setCategories([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleDelete = async (id: number) => {
     if (!confirm("Yakin ingin menghapus data ini?")) return;
