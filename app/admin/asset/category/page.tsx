@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Plus, Trash } from "lucide-react";
 import ModalAddCategory from "@/app/components/admin/Modal/Category/ModalAddCategory";
 import ModalEditCategory from "@/app/components/admin/Modal/Category/ModalEditCategory";
 
@@ -61,23 +61,31 @@ export default function CategoryPage() {
 
   return (
     <section>
+
+      <div className="flex justify-between items-center">
+
+      <div>
+          <h1 className="text-2xl">Data Asset Lelang</h1>
+        </div>
+
       <div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-indigo-800 px-4 py-2 text-white rounded-md text-sm cursor-pointer"
-        >
-          Tambah Kategori
+          className="bg-sky-400 px-4 py-2 text-white flex items-center gap-1 rounded-sm text-sm cursor-pointer"
+          >
+          <Plus size={16}/> Tambah Asset
         </button>
       </div>
+      </div>
 
-      <div className="mt-3 bg-gray-100">
-        <table className="overflow-hidden w-full rounded-lg shadow">
-          <thead className="bg-gray-800 text-zinc-200">
-            <tr className="text-sm font-light">
-              <th className="py-2 px-4 text-start">ID</th>
-              <th className="py-2 px-4 text-start">Category</th>
-              <th className="py-2 px-4 text-start">Description</th>
-              <th className="py-2 px-4 text-start">Aksi</th>
+      <div className="mt-3 bg-white p-7 shadow-sm rounded-md">
+        <table className="overflow-hidden w-full rounded-sm">
+          <thead className="">
+            <tr className="text-sm">
+              <th className="py-2 px-4 text-start font-normal">ID</th>
+              <th className="py-2 px-4 text-start font-normal">Category</th>
+              <th className="py-2 px-4 text-start font-normal">Description</th>
+              <th className="py-2 px-4 text-start font-normal">Aksi</th>
             </tr>
           </thead>
           <tbody>

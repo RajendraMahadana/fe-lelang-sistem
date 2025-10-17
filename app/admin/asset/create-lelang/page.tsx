@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function CreateLelangBarang() {
+  const router = useRouter(); 
   const [namaBarang, setNamaBarang] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
@@ -11,7 +14,6 @@ export default function CreateLelangBarang() {
   const [hargaAwal, setHargaAwal] = useState<number>(0);
   const [waktuMulai, setWaktuMulai] = useState("");
   const [waktuSelesai, setWaktuSelesai] = useState("");
-  const [bidTime, setBidTime] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [gambarBarang, setGambar] = useState<File | null>(null);
 
@@ -65,14 +67,17 @@ export default function CreateLelangBarang() {
 
     if (res.ok) {
       setMessage("Barang lelang berhasil dibuat!");
+      // Reset form
       setNamaBarang("");
       setCategoryId("");
       setDeskripsi("");
       setHargaAwal(0);
       setWaktuMulai("");
       setWaktuSelesai("");
-      setBidTime(null);
       setGambar(null);
+
+      // **Redirect ke halaman admin/asset**
+      router.push("/admin/asset"); // <--- letakkan di sini
     } else {
       setMessage(data.message || "Gagal membuat barang");
     }
@@ -84,101 +89,131 @@ export default function CreateLelangBarang() {
 
 
   return (
-    <div className="bg-white p-5 rounded-lg">
-      <h1 className="text-xl font-bold mb-4">Tambah Barang Lelang</h1>
+    <>
+      <h1 className="text-2xl mb-5">Tambah Barang Lelang</h1>
+    <div className="bg-white p-5 rounded-lg shadow-md">
 
       {message && <p className="mb-2 text-sm text-red-600">{message}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+
+  <div>
+    <label htmlFor="gambar" className="block text-sm font-semibold text-gray-700 mb-2">Tambahkan Gambar</label>
+    <input
+      name="gambar"
+      type="file"
+      onChange={(e) => setGambar(e.target.files?.[0] || null)}
+      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+      required
+    />
+  </div>
+
+  {/* Flex container responsif */}
+  <div className="flex flex-wrap gap-4">
+    <div className="flex-1  min-w-[200px]">
+      <label>Nama Barang</label>
       <input
-            type="file"
-            onChange={(e) => setGambar(e.target.files?.[0] || null)}
-            className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
-            required
-          />
-        <input
-          type="text"
-          placeholder="Nama Barang"
-          value={namaBarang}
-          onChange={(e) => setNamaBarang(e.target.value)}
-          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
-          required
-        />
-
-        <div>
-        <label>Kategori</label>
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          required
-        >
-          <option value="">-- Pilih Kategori --</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.nama_kategori}
-            </option>
-          ))}
-        </select>
-      </div>
-
-        <textarea
-          placeholder="Deskripsi"
-          value={deskripsi}
-          onChange={(e) => setDeskripsi(e.target.value)}
-          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
-        />
-
-        <input
-          type="number"
-          placeholder="Harga Awal"
-          value={hargaAwal}
-          onChange={(e) => setHargaAwal(Number(e.target.value))}
-          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
-          required
-        />
-
-        <input
-          type="datetime-local"
-          value={waktuMulai}
-          onChange={(e) => setWaktuMulai(e.target.value.replace("T", " ") + ":00")}
-          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
-          required
-        />
-
-        <input
-          type="datetime-local"
-          value={waktuSelesai}
-          onChange={(e) => setWaktuSelesai(e.target.value.replace("T", " ") + ":00")}
-          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
-          required
-        />
-
-        <input
-          type="number"
-          placeholder="Bid Time (menit)"
-          value={bidTime ?? ""}
-          onChange={(e) => setBidTime(Number(e.target.value))}
-          className="transition-all duration-150 ease-initial shadow-md pl-5 bg-gray-200 pr-4 py-2 text-sm rounded-md  placeholder:text-sm focus:outline-none focus:ring-0 focus:border-none focus:bg-gray-200  w-full"
-        />
-
-        <div className="w-full flex justify-end">
-          <div className="flex w-1/3 space-x-2">
-            <Link href={`/admin/asset`} className="w-full bg-red-600 flex justify-center items-center text-white py-2 font-medium font-montserrat rounded-md shadow-md">
-              <button
-                className=""
-                >
-                Batal
-              </button>
-            </Link>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 font-medium font-montserrat rounded-md shadow-md"
-              >
-              Simpan
-            </button>
-          </div>  
-        </div>
-      </form>
+        type="text"
+        placeholder="Nama Barang"
+        value={namaBarang}
+        onChange={(e) => setNamaBarang(e.target.value)}
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+        required
+      />
     </div>
+
+    <div className="flex-1 min-w-[200px]">
+      <label className="block text-sm font-semibold text-gray-700 mb-2">Kategori</label>
+      <select
+        value={categoryId}
+        onChange={(e) => setCategoryId(e.target.value)}
+        required
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+      >
+        <option value="">-- Pilih Kategori --</option>
+        {categories.map((cat) => (
+          <option key={cat.id} value={cat.id}>
+            {cat.nama_kategori}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div className="flex-1 min-w-[200px]">
+      <label className="block text-sm font-semibold text-gray-700 mb-2">Harga Awal</label>
+      <input
+        type="number"
+        placeholder="Harga Awal"
+        value={hargaAwal}
+        onChange={(e) => setHargaAwal(Number(e.target.value))}
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+        required
+      />
+    </div>
+  </div>
+
+  {/* Flex container untuk tanggal */}
+  <div className="flex flex-wrap gap-4">
+    <div className="flex-1 min-w-[200px]">
+      <label className="block text-sm font-semibold text-gray-700 mb-2">Tentukan Waktu Mulai</label>
+      <input
+        type="datetime-local"
+        value={waktuMulai}
+        onChange={(e) => setWaktuMulai(e.target.value.replace("T", " ") + ":00")}
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+        required
+      />
+    </div>
+
+    <div className="flex-1 min-w-[200px]">
+      <label className="block text-sm font-semibold text-gray-700 mb-2">Tentukan Waktu Akhir</label>
+      <input
+        type="datetime-local"
+        value={waktuSelesai}
+        onChange={(e) => setWaktuSelesai(e.target.value.replace("T", " ") + ":00")}
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+        required
+      />
+    </div>
+  </div>
+
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-2">Masukan Deskripsi</label>
+    <textarea
+      placeholder="Deskripsi"
+      value={deskripsi}
+      onChange={(e) => setDeskripsi(e.target.value)}
+      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+    />
+  </div>
+
+  <div className="w-full flex justify-end mt-4">
+  <div className="flex gap-2 w-full md:w-1/3">
+    {/* Batal */}
+    <Link href="/admin/asset" className="w-full">
+      <button
+        type="button"
+        className="w-full cursor-pointer bg-red-600 text-white py-2 font-medium rounded-md shadow-md hover:bg-red-700 transition-colors"
+      >
+        Batal
+      </button>
+    </Link>
+
+    {/* Simpan */}
+    <button
+      type="submit"
+      className="w-full cursor-pointer bg-blue-600 text-white py-2 font-medium rounded-md shadow-md hover:bg-blue-700 transition-colors"
+    >
+      Simpan
+    </button>
+  </div>
+</div>
+
+
+</form>
+
+    </div>
+    </>
+
   );
 }

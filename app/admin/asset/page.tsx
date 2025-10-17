@@ -84,7 +84,7 @@ export default function DataTable()  {
           
 
       <div>
-        <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left">
       <button
         onClick={() => setOpen(!open)}
         className="px-4 py-2 flex gap-1 items-center bg-none text-sm text-sky-500 outline-1 rounded-sm"
@@ -145,7 +145,7 @@ export default function DataTable()  {
                   <td className="py-2 px-4 text-start">{item.id}</td>
                   <td className="py-2 px-4 text-start">
                     <Image
-                      src={`http://127.0.0.1:8000/${item.gambar_barang}`}
+                      src={`http://127.0.0.1:8000/storage/${item.gambar_barang}`}
                       alt={item.nama_barang}
                       width={50}
                       height={50}

@@ -107,7 +107,7 @@ export default function Home() {
           >
             <div className="relative w-full h-52 overflow-hidden bg-gray-100">
               <Image
-                src={`http://127.0.0.1:8000/${item.gambar_barang}`}
+                src={`http://127.0.0.1:8000/storage/${item.gambar_barang}`}
                 alt={item.nama_barang}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"

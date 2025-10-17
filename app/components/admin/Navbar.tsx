@@ -10,6 +10,7 @@ export default function NavbarAdmin() {
         "/admin/dashboard": "Dashboard",
         "/admin/users": "Manage Users",
         "/admin/asset": "Asset",
+        "/admin/asset/category": "Category",
         "/admin/reports": "Reports",
         "/admin/analytics": "Analytics",
     }
