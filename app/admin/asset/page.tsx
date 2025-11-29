@@ -40,7 +40,7 @@ export default function DataTable()  {
       });
       if (!res.ok) throw new Error("Gagal fetch data");
       const result = await res.json();
-      setData(result);
+      setData(result.data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -241,7 +241,7 @@ export default function DataTable()  {
           barang={selectedBarang}
           onClose={() => setSelectedBarang(null)}
           onSuccess={fetchBarang}
-        />
+        /> 
       )}
     </section>
   );
