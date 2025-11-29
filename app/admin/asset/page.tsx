@@ -24,13 +24,14 @@ interface LelangBarang {
 }
 
 
-export default function DataTable()  {
+export default function DataTable() {
   const [data, setData] = useState<LelangBarang[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBarang, setSelectedBarang] = useState<LelangBarang | null>(null);
   const [open, setOpen] = useState(false);
 
   const fetchBarang = async () => {
+    setLoading(true);
     try {
       const res = await fetch("http://127.0.0.1:8000/api/lelang-barang", {
         headers: {
@@ -38,18 +39,22 @@ export default function DataTable()  {
           Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
       });
-      if (!res.ok) throw new Error("Gagal fetch data");
+
       const result = await res.json();
-      setData(result);
+      console.log("Status:", res.status);
+      console.log("Response:", result);
+
+      // kalau API kamu return { data: [...] } gunakan ini:
+      setData(result.data ?? result);
     } catch (err) {
-      console.error(err);
+      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-   
+
 
     const channel = pusher.subscribe("lelang");
     fetchBarang();
@@ -81,42 +86,43 @@ export default function DataTable()  {
 
         <div className="flex gap-2 items-center">
 
-          
-
-      <div>
-    <div className="relative inline-block text-left">
-      <button
-        onClick={() => setOpen(!open)}
-        className="px-4 py-2 flex gap-1 items-center bg-none text-sm text-sky-500 outline-1 rounded-sm"
-      >
-        Menu <ChevronDown size={16}/>
-      </button>
-
-      {open && (
-        <div className="absolute mt-2 w-40 bg-white text-sm rounded-sm shadow-lg z-10">
-          <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-            Import
-          </a>
-          <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-            Export
-          </a>
-        </div>
-      )}
-    </div>
-     </div>
 
 
-     <div>
+          <div>
+            <div className="relative inline-block text-left">
+              <button
+                onClick={() => setOpen(!open)}
+                className="px-4 py-2 flex gap-1 items-center bg-none text-sm text-sky-500 outline-1 rounded-sm"
+              >
+                Menu <ChevronDown size={16} />
+              </button>
 
-        <Link href={`/admin/asset/create-lelang`}>
-          <button className="bg-sky-400 px-4 py-2 text-white flex items-center gap-1 rounded-sm text-sm cursor-pointer">
-            <Plus size={16}/> Tambah Asset</button>
-        </Link>
+              {open && (
+                <div className="absolute mt-2 w-40 bg-white text-sm rounded-sm shadow-lg z-10">
+                  <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+                    Import
+                  </a>
+                  <a href="#" className="block px-4 py-2 hover:bg-gray-100">
+                    Export
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
-      </div>
+
+
+          <div>
+
+            <Link href="/admin/asset/create-lelang">
+
+              <button className="bg-sky-400 px-4 py-2 text-white flex items-center gap-1 rounded-sm text-sm cursor-pointer">
+                <Plus size={16} /> Tambah Asset</button>
+            </Link>
+          </div>
+        </div>
       </div>
 
-      
+
       <div className="mt-3 bg-white p-7 shadow-sm rounded-md">
         <table className="overflow-hidden w-full rounded-sm ">
           <thead className="">
@@ -139,7 +145,7 @@ export default function DataTable()  {
                   Loading...
                 </td>
               </tr>
-            ): data.length > 0 ? (
+            ) : data.length > 0 ? (
               data.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50 border-t border-gray-200 text-xs">
                   <td className="py-2 px-4 text-start">{item.id}</td>
@@ -155,38 +161,37 @@ export default function DataTable()  {
                   <td className="py-2 px-4 text-start">{item.nama_barang}</td>
                   <td className="py-2 px-4 text-start">{item.category?.nama_kategori || "-"}</td>
                   <td className="py-2 px-4 text-start">Rp{new Intl.NumberFormat("id-ID").format(item.harga_awal)}</td>
-                 <td className="py-2 px-4 text-start">
-  {new Intl.DateTimeFormat("id-ID", {
-  day: "2-digit",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-}).format(new Date(item.waktu_mulai)) }
-</td>
                   <td className="py-2 px-4 text-start">
-  {new Intl.DateTimeFormat("id-ID", {
-  day: "2-digit",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-}).format(new Date(item.waktu_mulai)) }
-</td>
-                 <td className="py-2 px-4 text-start">
-  <div className="flex items-center">
-    <span
-      className={`px-3 py-1 rounded-sm text-xs font-medium
-        ${
-          item.status === "aktif"
-            ? "bg-green-100 text-green-600"
-            : item.status === "selesai"
-            ? "bg-gray-100 text-gray-600"
-            : "bg-red-100 text-red-600"
-        }`}
-    >
-      {item.status}
-    </span>
-  </div>
-</td>
+                    {new Intl.DateTimeFormat("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }).format(new Date(item.waktu_mulai))}
+                  </td>
+                  <td className="py-2 px-4 text-start">
+                    {new Intl.DateTimeFormat("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }).format(new Date(item.waktu_mulai))}
+                  </td>
+                  <td className="py-2 px-4 text-start">
+                    <div className="flex items-center">
+                      <span
+                        className={`px-3 py-1 rounded-sm text-xs font-medium
+        ${item.status === "aktif"
+                            ? "bg-green-100 text-green-600"
+                            : item.status === "selesai"
+                              ? "bg-gray-100 text-gray-600"
+                              : "bg-red-100 text-red-600"
+                          }`}
+                      >
+                        {item.status}
+                      </span>
+                    </div>
+                  </td>
                   <td className="py-2 px-4 text-start space-x-2">
                     <button
                       className="p-2 bg-blue-500 cursor-pointer shadow hover:bg-blue-700 text-white rounded-sm"
@@ -217,7 +222,7 @@ export default function DataTable()  {
                         }
                       }}
                     >
-                      <Trash size={16}/>
+                      <Trash size={16} />
                     </button>
                   </td>
                 </tr>
@@ -229,8 +234,8 @@ export default function DataTable()  {
                 </td>
               </tr>
             )}
-           
-            
+
+
           </tbody>
         </table>
       </div>
