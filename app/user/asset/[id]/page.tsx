@@ -79,7 +79,7 @@ export default function DetailPage({ params }: { params: Promise<{ id: string }>
       if (!res.ok) throw new Error("Gagal fetch data");
 
       const result = await res.json();
-      setData(result);
+      setData(result?.data ?? result);
     } catch (error) {
       console.error(error);
     }
