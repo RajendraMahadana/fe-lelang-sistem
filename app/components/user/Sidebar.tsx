@@ -35,7 +35,7 @@ const navigation: NavItem[] = [
   { name: 'NIPL', href: '/user/nipl/index', icon: IdCard, badge: '12' },
   { name: 'Asset', href: '/user/asset/index', icon: Package },
   { name: 'Reports', href: '/reports', icon: FileText },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Settings', href: '/user/settings', icon: Settings },
   // { name: 'Asset', href: '',icon: Package, badge: '3',
   //   children: [
   //     { name: 'Data Asset', href: '/admin/asset', icon: Circle },
