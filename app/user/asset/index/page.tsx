@@ -23,9 +23,9 @@ interface LelangBarang {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  aktif: "bg-green-300 text-green-600",
-  selesai: "bg-gray-300 text-gray-600",
-  dibatalkan: "bg-red-300 text-red-600",
+  aktif: "bg-green-100 text-green-600 border border-green-300",
+  selesai: "bg-gray-100 text-gray-600 border border-gray-300",
+  dibatalkan: "bg-red-100 text-red-600 border border-red-300",
 };
 
 const formatCurrency = (value: number) =>
@@ -83,88 +83,91 @@ export default function Home() {
 
   return (
     <>
+      {/* HEADER */}
       <section className="font-poppins mb-8">
         <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-gray-800">Asset Lelang</h1>
 
-        <div>
-          <h1 className="text-xl mb-2">Asset Lelang</h1>
-        </div>
-        <div>
-          <Link href={`/user/nipl/create`} className="">
-          <button className="flex items-center gap-1 cursor-pointer rounded-sm px-4 py-2 text-sm text-white bg-gray-800">
-            <Plus size={18}></Plus>  Buat NIPL
-          </button>
+          <Link href="/user/nipl/create">
+            <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-all shadow-md">
+              <Plus size={18} /> Buat NIPL
+            </button>
           </Link>
-        </div>
         </div>
       </section>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 font-poppins lg:grid-cols-3 gap-4">
+      {/* LIST CARD */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {data.map(item => (
           <div
             key={item.id}
-            className="group bg-white rounded-md shadow-md transition-all duration-300 overflow-hidden border border-gray-100"
+            className="group bg-white rounded-lg shadow hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200"
           >
-            <div className="relative w-full h-52 overflow-hidden bg-gray-100">
+            {/* IMAGE */}
+            <div className="relative w-full h-56 overflow-hidden bg-gray-100">
               <Image
                 src={`http://127.0.0.1:8000/${item.gambar_barang}`}
                 alt={item.nama_barang}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
-              <div className="absolute top-4 right-4">
+
+              {/* STATUS BADGE */}
+              <div className="absolute top-3 right-3">
                 <span
-                  className={`px-3 py-1 rounded-sm text-xs font-medium ${STATUS_STYLES[item.status]}`}
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${STATUS_STYLES[item.status]}`}
                 >
-                  {item.status}
+                  {item.status.toUpperCase()}
                 </span>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+              {/* DARK GRADIENT HOVER */}
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition"></div>
             </div>
 
-            <div className="p-5 space-y-3">
-              <div className="bg-gray-800 p-3 rounded-sm text-white">
-                <p className="text-xs mb-1">Harga Awal</p>
-                <p className="text-xl">{formatCurrency(item.harga_awal)}</p>
+            {/* CONTENT */}
+            <div className="p-5 space-y-4">
+              {/* HARGA */}
+              <div className="bg-blue-50 border border-blue-200 p-3 rounded-md">
+                <p className="text-xs text-gray-500">Harga Awal</p>
+                <p className="text-xl font-semibold text-blue-700 mt-1">
+                  {formatCurrency(item.harga_awal)}
+                </p>
               </div>
 
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+              {/* TITLE + CATEGORY */}
+              <div className="flex justify-between items-start">
+                <h2 className="text-lg font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition">
                   {item.nama_barang}
                 </h2>
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                  <p className="text-sm text-gray-600 font-medium">
-                    {item.category?.nama_kategori || "Kategori tidak tersedia"}
-                  </p>
-                </div>
+
+                <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700 border border-blue-300">
+                  {item.category?.nama_kategori || "Kategori?"}
+                </span>
               </div>
 
-              <div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                  <span className="text-xs font-medium text-gray-600">Periode Lelang</span>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-gray-500">
-                    <span className="font-medium">Mulai:</span> {formatDate(item.waktu_mulai)}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    <span className="font-medium">Selesai:</span> {formatDate(item.waktu_selesai)}
-                  </p>
-                </div>
+              {/* PERIODE */}
+              <div className="text-gray-600 text-xs space-y-1">
+                <p>
+                  <span className="font-medium text-gray-700">Mulai:</span>{" "}
+                  {formatDate(item.waktu_mulai)}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-700">Selesai:</span>{" "}
+                  {formatDate(item.waktu_selesai)}
+                </p>
               </div>
 
-              <Link href={`/user/asset/${item.id}`} className="block w-full">
-  <button className="w-full outline rounded-sm text-blue-600 outline-blue-600 py-2 text-sm font-medium hover:bg-blue-700 hover:text-white transition-colors duration-200 text-center">
-    {item.status === "aktif"
-      ? "Ikuti Lelang"
-      : item.status === "selesai"
-      ? "Lihat Hasil"
-      : "Detail"}
-  </button>
-</Link>
-
+              {/* BUTTON */}
+              <Link href={`/user/asset/${item.id}`} className="block">
+                <button className="w-full text-center py-2 text-sm font-medium rounded-md border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all">
+                  {item.status === "aktif"
+                    ? "Ikuti Lelang"
+                    : item.status === "selesai"
+                    ? "Lihat Hasil"
+                    : "Detail"}
+                </button>
+              </Link>
             </div>
           </div>
         ))}
