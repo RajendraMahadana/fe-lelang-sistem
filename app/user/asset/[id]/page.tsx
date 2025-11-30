@@ -7,6 +7,7 @@ import Image from "next/image";
 import { use } from "react";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 /* --- INTERFACE --- */
 interface LelangBarang {
@@ -461,13 +462,13 @@ function AlertModal({
         <div className="px-6 pb-6">
           {alert.type === "nipl_required" ? (
             <div className="space-y-3">
-              <button
-                onClick={onNavigateToNIPL}
-                className={`w-full ${config.buttonColor} text-white font-semibold px-6 py-3 rounded-lg transition flex items-center justify-center gap-2`}
-              >
-                <Lock size={18} />
-                Buat NIPL Sekarang
-              </button>
+              <Link
+            href="/user/nipl/create"
+            className={`w-full ${config.buttonColor} text-white font-semibold px-6 py-3 rounded-lg transition flex items-center justify-center gap-2`}
+          >
+            <Lock size={18} />
+            Buat NIPL Sekarang
+          </Link>
               <button
                 onClick={onClose}
                 className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-3 rounded-lg transition"

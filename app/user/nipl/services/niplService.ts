@@ -1,51 +1,61 @@
-// services/niplService.ts
-export interface NiplPayload {
-  no_telepon: string;
+import { apiFetch } from "@/app/lib/Api";
+
+// --- Tipe Data (Interfaces) ---
+
+export interface NiplPurchaseResponse {
+  invoice_url: string;
+  external_id: string;
+  status: string;
 }
 
-// services/nipl.ts
-// services/nipl.ts
-export async function buyNipl(noTelepon: string) {
-  const token = localStorage.getItem("auth_token");
-
-  const res = await fetch("http://localhost:8000/api/nipl/buy", {
-    method: "POST",
-    headers: {
-  "Content-Type": "application/json",
-  "Accept": "application/json",
-  Authorization: `Bearer ${token}`,
-},
-    body: JSON.stringify({
-      no_telepon: noTelepon,
-    }),
-  });
-
-  if (!res.ok) {
-    const error = await res.json();
-    console.error("Error response:", error); // cek detail error
-    throw new Error(error.message || "Terjadi kesalahan");
-  }
-
-  return res.json(); // { invoice_url, external_id }
+export interface NiplData {
+  id: number;
+  amount: number;
+  status: 'pending' | 'paid' | 'expired';
+  created_at: string;
 }
 
+// --- Service Functions ---
 
+/**
+ * Membeli NIPL baru (Request ke Xendit via Backend)
+ */
+export const buyNipl = async (noTelepon: string) => {
+  try {
+    // apiFetch otomatis menambahkan Base URL dan Header JSON
+    const data = await apiFetch<NiplPurchaseResponse>("/nipl/buy", {
+      method: "POST",
+      // Token biasanya sudah dihandle di apiFetch atau bisa diambil manual di sini
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("auth_token")}`
+      },
+      body: JSON.stringify({
+        no_telepon: noTelepon,
+      }),
+    });
 
-
-export const getNiplList = async (token: string) => {
-  const res = await fetch("http://127.0.0.1:8000/api/nipl", {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Gagal mengambil daftar NIPL");
+    return data; 
+  } catch (error) {
+    console.error("Error buying NIPL:", error);
+    throw error;
   }
-
-  return res.json();
 };
 
+/**
+ * Mengambil daftar riwayat NIPL User
+ */
+export const getNiplList = async () => {
+  try {
+    const data = await apiFetch<NiplData[]>("/nipl", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("auth_token")}`
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching NIPL list:", error);
+    throw error;
+  }
+};
