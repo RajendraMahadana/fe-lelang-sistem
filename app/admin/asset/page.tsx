@@ -39,7 +39,7 @@ export default function DataTable() {
       });
       if (!res.ok) throw new Error("Gagal fetch data");
       const result = await res.json();
-      setData(result.data);
+      setData(result?.data ?? result);
     } catch (err) {
       console.error(err);
     } finally {
