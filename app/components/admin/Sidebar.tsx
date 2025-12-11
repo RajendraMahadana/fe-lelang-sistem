@@ -34,7 +34,7 @@ const navigation: NavItem[] = [
   { name: 'Users', href: '/admin/users', icon: Users, badge: '12' },
   { name: 'Asset', href: '',icon: Package, badge: '3',
     children: [
-      { name: 'Data Asset', href: '/admin/asset', icon: Circle },
+      { name: 'Data Asset', href: '/admin/asset/lelang', icon: Circle },
       { name: 'Category', href: '/admin/asset/category', icon: Circle },
     ]
   },

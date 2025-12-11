@@ -1,3 +1,6 @@
+// components/UserInfo.tsx
+"use client";
+
 import { useEffect, useState } from "react";
 
 interface User {
@@ -13,26 +16,18 @@ export default function UserInfo() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("auth_token"); // ambil token dari login
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/user/isLogin", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
+        // ✅ Tidak perlu kirim token — server baca dari cookies otomatis
+        const res = await fetch("/api/user/me");
+        
+        if (!res.ok) throw new Error("Unauthorized");
+        
         const data: User = await res.json();
         setUser(data);
       } catch (err) {
-        console.error("Fetch error:", err);
+        console.error("Fetch user failed", err);
+        // Opsional: redirect ke login
+        // window.location.href = "/login";
       } finally {
         setLoading(false);
       }
@@ -41,8 +36,8 @@ export default function UserInfo() {
     fetchUser();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (!user) return <p>User tidak ditemukan</p>;
+  if (loading) return <p className="text-sm">Loading...</p>;
+  if (!user) return <p className="text-sm text-gray-500">Guest</p>;
 
   return (
     <div className="whitespace-nowrap">

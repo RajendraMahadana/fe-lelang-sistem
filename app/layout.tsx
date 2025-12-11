@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Jost, Montserrat, Poppins } from "next/font/google";
-import "./globals.css";
+import "./globals.css"
+import { Toaster } from "sonner";
 
 
 const geistSans = Geist({
@@ -49,6 +50,7 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${montserrat.variable} antialiased ${jost.variable}`}>
           {children}
+          <Toaster richColors /> 
       </body>
     </html>
   );

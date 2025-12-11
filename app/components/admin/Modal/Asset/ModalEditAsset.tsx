@@ -1,331 +1,395 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { X, Upload, Image as ImageIcon } from "lucide-react";
+import { useState, useTransition, useEffect } from "react";
+import { X, Upload, Image as ImageIcon, ChevronDown, AlertCircle, Calendar, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
+import type { LelangBarang } from "@/lib/types/lelang";
+import type { Category } from "@/lib/types/category";
+import { updateLelangAction } from "@/lib/actions/lelang";
+import Image from "next/image";
+import { getStatusBadgeClass } from '@/utils/statusBadge';
 
-interface LelangBarang {
-  id: number;
-  kategori_id: number;
-  nama_barang: string;
-  deskripsi: string;
-  gambar_barang: string;
-  harga_awal: number;
-  waktu_mulai: string;
-  waktu_selesai: string;
-}
-
-interface Category {
-  id: number;
-  nama_kategori: string;
-}
-
-interface ModalUpdateProps {
-  barang: LelangBarang | null;
+interface ModalEditAssetProps {
+  barang: LelangBarang;
+  categories: Category[];
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export default function ModalUpdate({
+export default function ModalEditAsset({
   barang,
+  categories,
   onClose,
   onSuccess,
-}: ModalUpdateProps) {
-  const [form, setForm] = useState<LelangBarang | null>(barang);
-  const [gambarBarang, setGambar] = useState<File | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+}: ModalEditAssetProps) {
+  const [isPending, startTransition] = useTransition();
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [formData, setFormData] = useState<FormData>(new FormData());
+  const { bg, text } = getStatusBadgeClass(barang.status);
 
-  useEffect(() => {
-    setForm(barang);
-  }, [barang]);
+  // Format datetime untuk input
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().slice(0, 16);
+  };
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const token = localStorage.getItem("auth_token");
-        const res = await fetch("http://127.0.0.1:8000/api/categories", {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        setCategories(data.data || []);
-      } catch (err) {
-        console.error("Gagal ambil kategori", err);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  if (!form) return null;
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  // Handle input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setForm((prev) => (prev ? { ...prev, [name]: value } : prev));
+    if (formData.has(name)) {
+      formData.set(name, value);
+    } else {
+      formData.append(name, value);
+    }
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setForm((prev) =>
-      prev ? { ...prev, kategori_id: Number(e.target.value) } : prev
-    );
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setGambar(file);
+  // Handle file change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
+      if (formData.has('gambar_barang')) {
+        formData.set('gambar_barang', file);
+      } else {
+        formData.append('gambar_barang', file);
+      }
+      
+      // Preview
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!form) return;
+    setErrors({});
+    
+    // Debug log
+    console.log("Form Data sebelum submit:");
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
 
-    const formData = new FormData();
-    const cleanHargaAwal = Number(
-      form.harga_awal.toString().replace(/\./g, "").replace(/,.*$/, "")
-    );
-    formData.append("nama_barang", form.nama_barang);
-    formData.append("deskripsi", form.deskripsi);
-    formData.append("harga_awal", String(cleanHargaAwal));
-    formData.append("waktu_mulai", form.waktu_mulai);
-    formData.append("waktu_selesai", form.waktu_selesai);
-    formData.append("kategori_id", String(form.kategori_id));
-    if (gambarBarang) formData.append("gambar_barang", gambarBarang);
-    formData.append("_method", "PUT");
-
-    try {
-      const res = await fetch(
-        `http://127.0.0.1:8000/api/lelang-barang/${form.id}/barang`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-          },
-          body: formData,
+    startTransition(async () => {
+      try {
+        // Tambah _method untuk Laravel
+        formData.append('_method', 'PUT');
+        
+        const result = await updateLelangAction(barang.id, formData);
+        
+        if (result.success) {
+          toast.success("✅ Barang lelang berhasil diperbarui!");
+          onSuccess();
+          onClose();
+        } else {
+          toast.error(`❌ ${result.message || "Gagal memperbarui lelang"}`);
+          if (result.errors) setErrors(result.errors);
         }
-      );
-
-      if (!res.ok) {
-        const errData = await res.json();
-        console.error("Error detail:", errData);
-        alert(
-          "Terjadi kesalahan: " + (errData.message || JSON.stringify(errData))
-        );
-        return;
+      } catch (err) {
+        console.error("Error in handleSubmit:", err);
+        toast.error(`❌ Terjadi kesalahan sistem`);
       }
-      alert("Data berhasil diupdate!");
-      onSuccess();
-      onClose();
-    } catch (err) {
-      console.error(err);
-      alert("Terjadi kesalahan: " + err.message);
-    }
+    });
   };
 
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50 p-4">
-      <div className="bg-white modal-content rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto  flex flex-col animate-in fade-in zoom-in duration-200">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800">Edit Barang</h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Perbarui informasi barang lelang
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
+ return (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/50 r-sm z-50 p-4">
+    <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gray-100">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Edit Barang Lelang</h2>
+          <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
+            <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">ID #{barang.id}</span>
+          </p>
         </div>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Tutup"
+          disabled={isPending}
+        >
+          <X className="w-5 h-5 text-gray-600" />
+        </button>
+      </div>
 
-        {/* Form Content */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
-          <div className="p-6 space-y-5">
-            {/* Image Upload */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Gambar Barang
-              </label>
-              <div className="relative">
-                <input
-                  type="file"
-                  id="gambar-upload"
-                  onChange={handleImageChange}
-                  accept="image/*"
-                  className="hidden"
-                />
-                <label
-                  htmlFor="gambar-upload"
-                  className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group"
-                >
-                  {previewUrl || form.gambar_barang ? (
-                    <div className="relative w-full h-full">
-                      <img
-                        src={previewUrl || form.gambar_barang}
-                        alt="Preview"
-                        className="w-full h-full object-cover rounded-xl"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
-                        <Upload className="w-8 h-8 text-white" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2 group-hover:text-blue-500 transition-colors" />
-                      <p className="text-sm text-gray-600 group-hover:text-blue-600">
-                        Klik untuk upload gambar
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        PNG, JPG hingga 10MB
-                      </p>
-                    </div>
-                  )}
-                </label>
-              </div>
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+        {/* Gambar */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">Gambar Barang</label>
+          <input
+            type="file"
+            name="gambar_barang"
+            id="gambar-upload"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <label
+            htmlFor="gambar-upload"
+            className="block cursor-pointer group"
+          >
+            <div className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-md bg-gray-50 hover:border-blue-400 hover:bg-blue-50/30 transition-all duration-200 min-h-[180px]">
+              {previewUrl || barang.gambar_barang ? (
+                <div className="relative aspect-video rounded-md overflow-hidden">
+                  <Image
+                    src={previewUrl || `http://127.0.0.1:8000/storage/${barang.gambar_barang}`}
+                    alt="Preview barang"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 700px) 100vw, 500px"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <Upload className="w-6 h-6 text-white" />
+                    <span className="ml-2 text-white text-sm font-medium">Ganti gambar</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center p-6">
+                  <div className="mx-auto w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                    <ImageIcon className="w-7 h-7 text-gray-400" />
+                  </div>
+                  <p className="mt-3 text-gray-600 text-sm font-medium">
+                    Klik untuk upload gambar
+                  </p>
+                  <p className="mt-1 text-xs text-gray-400">
+                    Format: JPG, PNG, JPEG &bull; Maks. 2 MB
+                  </p>
+                </div>
+              )}
             </div>
+          </label>
+          {errors.gambar_barang && (
+            <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {errors.gambar_barang}
+            </p>
+          )}
+        </div>  
+        
+        <div className="flex gap-2">
 
-            {/* Nama Barang */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Nama Barang
-              </label>
-              <input
-                type="text"
-                name="nama_barang"
-                value={form.nama_barang}
-                onChange={handleChange}
-                placeholder="Masukkan nama barang"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                required
-              />
-            </div>
+          {/* Nama Barang */}
+          <div className="space-y-2 w-full">
+            <label htmlFor="nama_barang" className="block text-sm font-medium text-gray-700">
+              Nama Barang <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="nama_barang"
+              name="nama_barang"
+              defaultValue={barang.nama_barang}
+              onChange={handleInputChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              required
+            />
+            {errors.nama_barang && (
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                {errors.nama_barang}
+              </p>
+            )}
+          </div>
 
-            {/* Kategori */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Kategori
-              </label>
+          {/* Kategori */}
+          <div className="space-y-2 w-full">
+            <label htmlFor="kategori_id" className="block text-sm font-medium text-gray-700">
+              Kategori <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
               <select
-                value={form.kategori_id}
-                onChange={handleCategoryChange}
+                id="kategori_id"
+                name="kategori_id"
+                defaultValue={barang.kategori_id}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-md bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
               >
-                <option value="">-- Pilih Kategori --</option>
+                <option value="" disabled>-- Pilih kategori --</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.nama_kategori}
                   </option>
                 ))}
               </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none w-5 h-5" />
             </div>
+            {errors.kategori_id && (
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                {errors.kategori_id}
+              </p>
+            )}
+          </div>
+        
+        </div>
 
-            {/* Deskripsi */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Deskripsi
-              </label>
-              <textarea
-                name="deskripsi"
-                value={form.deskripsi}
-                onChange={handleChange}
-                placeholder="Masukkan deskripsi barang"
-                rows={4}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
-              />
-            </div>
-
-            {/* Harga Awal */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Harga Awal
+        {/* Waktu Mulai & Selesai */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-gray-700">Jadwal Lelang</h3>
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label htmlFor="waktu_mulai" className="block text-sm font-medium text-gray-700">
+                Mulai <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
-                  Rp
-                </span>
-                <input
-                  type="text"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                  value={Number(form.harga_awal).toLocaleString("id-ID")}
-                  onChange={(e) => {
-                    const cleanValue = e.target.value.replace(/\D/g, "");
-                    setForm((prev) =>
-                      prev ? { ...prev, harga_awal: Number(cleanValue) } : prev
-                    );
-                  }}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-
-            {/* Waktu Mulai & Selesai */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Waktu Mulai
-                </label>
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="datetime-local"
+                  id="waktu_mulai"
                   name="waktu_mulai"
-                  value={form.waktu_mulai.replace(" ", "T").slice(0, 16)}
-                  onChange={(e) => {
-                    const datetime = e.target.value.replace("T", " ") + ":00";
-                    setForm((prev) =>
-                      prev ? { ...prev, waktu_mulai: datetime } : prev
-                    );
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  defaultValue={formatDateTime(barang.waktu_mulai)}
+                  onChange={handleInputChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Waktu Selesai
-                </label>
+              {errors.waktu_mulai && (
+                <p className="text-sm text-red-500 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {errors.waktu_mulai}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="waktu_selesai" className="block text-sm font-medium text-gray-700">
+                Selesai <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="datetime-local"
+                  id="waktu_selesai"
                   name="waktu_selesai"
-                  value={form.waktu_selesai.replace(" ", "T").slice(0, 16)}
-                  onChange={(e) => {
-                    const datetime = e.target.value.replace("T", " ") + ":00";
-                    setForm((prev) =>
-                      prev ? { ...prev, waktu_selesai: datetime } : prev
-                    );
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  defaultValue={formatDateTime(barang.waktu_selesai)}
+                  onChange={handleInputChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  required
                 />
+              </div>
+              {errors.waktu_selesai && (
+                <p className="text-sm text-red-500 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {errors.waktu_selesai}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        
+
+        {/* Harga Awal */}
+        <div className="space-y-2">
+          <label htmlFor="harga_awal" className="block text-sm font-medium text-gray-700">
+            Harga Awal <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
+            <input
+              type="number"
+              id="harga_awal"
+              name="harga_awal"
+              defaultValue={barang.harga_awal}
+              onChange={handleInputChange}
+              min="1000"
+              step="1000"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              required
+            />
+          </div>
+          {errors.harga_awal && (
+            <p className="text-sm text-red-500 flex items-center gap-1">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {errors.harga_awal}
+            </p>
+          )}
+        </div>
+
+        {/* Deskripsi */}
+        <div className="space-y-2">
+          <label htmlFor="deskripsi" className="block text-sm font-medium text-gray-700">
+            Deskripsi
+          </label>
+          <textarea
+            id="deskripsi"
+            name="deskripsi"
+            defaultValue={barang.deskripsi}
+            onChange={handleInputChange}
+            rows={3}
+            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          />
+          {errors.deskripsi && (
+            <p className="text-sm text-red-500 flex items-center gap-1">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {errors.deskripsi}
+            </p>
+          )}
+        </div>
+
+        
+
+        {/* Status */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">Status</label>
+          <div className="px-4 py-3 rounded-md bg-gray-50 border border-gray-200 flex items-center justify-between">
+          <span className={`text-xs ${bg} ${text} px-3 py-1 rounded-md font-medium`}>
+            {barang.status}
+          </span>
+            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
+              Tidak bisa diubah
+            </span>
+          </div>
+          <p className="text-xs text-gray-500">
+            Status lelang dikelola otomatis oleh sistem berdasarkan waktu dan aktivitas.
+          </p>
+        </div>
+
+        {/* Error Summary (opsional — bisa di-hide jika error sedikit) */}
+        {Object.keys(errors).length > 2 && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-medium text-red-700">Perbaiki kesalahan berikut:</h4>
+                <ul className="mt-1 text-sm text-red-600 list-disc pl-5 space-y-1">
+                  {Object.entries(errors).map(([field, message]) => (
+                    <li key={field}>{message}</li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
+        )}
 
-          {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-100 transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30"
-            >
-              Simpan Perubahan
-            </button>
-          </div>
-        </form>
-      </div>
+        {/* Action Buttons */}
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-100">
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full sm:w-auto px-5 py-3 text-gray-700 font-medium rounded-md border border-gray-300 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-60 transition"
+            disabled={isPending}
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            className="w-full sm:w-auto px-5 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 min-w-[120px]"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Menyimpan...
+              </>
+            ) : (
+              "Simpan Perubahan"
+            )}
+          </button>
+        </div>
+      </form>
     </div>
-  );
+  </div>
+);
 }
